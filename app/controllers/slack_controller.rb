@@ -41,7 +41,7 @@ class SlackController < ApplicationController
       }
     else
       winner = Candidate.find(winner_id)
-      
+
       msg = {
         "response_type" =>  "in_channel",
         "text" => "Poll Closed: #{poll_name}, The Winner Is: #{winner.name}"
@@ -75,8 +75,9 @@ class SlackController < ApplicationController
 
     votes = Vote.where(poll_id: poll.id, voter: user_id)
     list = votes.collect do |v|
+      c = Candidate.find(v.candidate_id)
       {
-        "text" =>  "#{v.name} #{v.priority}"
+        "text" => "#{c.name} #{v.priority}"
       }
     end
 
