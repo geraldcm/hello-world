@@ -178,13 +178,13 @@ class SlackController < ApplicationController
 
   private
     def poll_params
-      poll_name = params[:text].strip.split(" ")[0]
+      poll_name = params[:text].strip.split(" ")[0].strip.downcase
       poll_candidates = params[:text][/\[.*?\]/].slice(1..-2).split(",")
       return poll_name, poll_candidates
     end
 
     def poll_name
-      poll_name = params[:text].strip
+      poll_name = params[:text].strip.downcase
       return poll_name
     end
 
