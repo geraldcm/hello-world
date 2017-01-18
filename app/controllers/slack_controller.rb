@@ -96,7 +96,7 @@ class SlackController < ApplicationController
     render json: msg, status: :success
   end
 
-  def see_standings
+  def see_standings1
     poll = get_poll
 
     candidates = Candidate.where(poll_id: poll.id)
@@ -107,7 +107,7 @@ class SlackController < ApplicationController
       "votes"=>  votes}
   end
 
-  def see_winner
+  def see_standings
     poll = get_poll
 
     candidates = Candidate.where(poll_id: poll.id)
