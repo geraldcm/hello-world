@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  voter: MyString
+  candidate: 
+  poll: 
+  priority: 1
+
+two:
+  voter: MyString
+  candidate: 
+  poll: 
+  priority: 1

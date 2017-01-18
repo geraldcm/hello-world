@@ -1,0 +1,18 @@
+
+base: &base
+  prepared_statements: false
+  pool:                2
+  timeout:             5000
+
+development:
+  <<:                  *base
+  host:                localhost
+  port:                9750
+  adapter:             postgresql
+  database:            slack-runoff-vote
+
+
+generic_heroku: &generic_heroku
+  <<:                  *base
+  adapter:             postgresql
+  database:            slack-runoff-vote
