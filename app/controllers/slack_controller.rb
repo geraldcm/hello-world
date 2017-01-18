@@ -240,6 +240,7 @@ class SlackController < ApplicationController
           return -1
         end
         last = records_array.to_a[-1]
+        candidate_list = candidate_list & records_array.collect{|x| x["candidate_id"].to_i}
         candidate_list.delete(last["candidate_id"].to_i)
         winner_id = records_array.to_a[0]["candidate_id"].to_i
       end
