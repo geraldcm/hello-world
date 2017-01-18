@@ -96,7 +96,7 @@ class SlackController < ApplicationController
     render json: msg, status: :success
   end
 
-  def see_standings1
+  def see_standings
     poll = get_poll
 
     candidates = Candidate.where(poll_id: poll.id)
@@ -107,7 +107,7 @@ class SlackController < ApplicationController
       "votes"=>  votes}
   end
 
-  def see_standings
+  def see_winner
     poll = get_poll
 
     candidates = Candidate.where(poll_id: poll.id)
@@ -116,7 +116,7 @@ class SlackController < ApplicationController
 
     winner_id = -1
 
-    while(candidate_list.length > 2) do
+    while(candidate_list.length > 1) do
       sql = "select candidate_id,count(*) from votes,
               (
               select voter, min(priority) as priority from votes
@@ -132,9 +132,28 @@ class SlackController < ApplicationController
             order by count(*) DESC;"
 
       records_array = ActiveRecord::Base.connection.execute(sql)
+      if(records_array.to_a.length == 0)
+        msg = {
+          "response_type" =>  "ephemeral",
+          "text" => "No Winner In: #{poll_name}"
+        }
+
+        render json: msg, status: :success
+        return
+      end
       last = records_array.to_a[-1]
       candidate_list.delete(last["candidate_id"].to_i)
       winner_id = records_array.to_a[0]["candidate_id"].to_i
+    end
+
+    if(winner_id == -1)
+      msg = {
+        "response_type" =>  "ephemeral",
+        "text" => "No Winner In: #{poll_name}"
+      }
+
+      render json: msg, status: :success
+      return
     end
 
     winner = Candidate.find(winner_id)
@@ -167,6 +186,7 @@ class SlackController < ApplicationController
       p = Poll.where(name: poll_name)
       if(p.length == 0)
         render json: "no poll found with #{poll_name}", status: :failure
+        return
       end
       p.last
     end
