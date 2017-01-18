@@ -29,6 +29,9 @@ class SlackController < ApplicationController
 
   def close_poll
     poll = get_poll
+    if poll.blank
+      return
+    end
     poll.open = false
     poll.save
 
@@ -53,9 +56,19 @@ class SlackController < ApplicationController
 
   def vote
     poll_name, poll_candidates = poll_params
-    poll = Poll.where(name: poll_name)[0]
+    poll = get_poll
+    if poll.blank
+      return
+    end
+
     if(!poll.open)
-      render json: "This poll is closes #{poll}"
+      msg = {
+        "response_type" =>  "ephemeral",
+        "text" => "This poll is closes #{poll}",
+        "attachments" => list
+      }
+
+      render json: msg
       return
     end
 
@@ -66,7 +79,13 @@ class SlackController < ApplicationController
     poll_candidates.each_with_index do |candidate, index|
       c_list = Candidate.where(name: candidate.strip.downcase, poll_id: poll.id)
       if(c_list.length != 1)
-        render json: "This candidate is invalid #{candidate.strip.downcase}. Expecting 1 found #{c_list.length}"
+        msg = {
+          "response_type" =>  "ephemeral",
+          "text" => "This candidate is invalid #{candidate.strip.downcase}. Expecting 1 found #{c_list.length}",
+          "attachments" => list
+        }
+
+        render json: msg
         return
       end
       c = c_list[0]
@@ -92,6 +111,10 @@ class SlackController < ApplicationController
 
   def see_candidates
     poll = get_poll
+    if poll.blank
+      return
+    end
+
     candidates = Candidate.where(poll_id: poll.id)
     list = candidates.collect do |c|
       {
@@ -110,6 +133,9 @@ class SlackController < ApplicationController
 
   def see_standings
     poll = get_poll
+    if poll.blank
+      return
+    end
 
     candidates = Candidate.where(poll_id: poll.id)
     votes = Vote.where(poll_id: poll.id)
@@ -161,7 +187,12 @@ class SlackController < ApplicationController
     def get_poll
       p = Poll.where(name: poll_name)
       if(p.length == 0)
-        render json: "no poll found with #{poll_name}", status: :failure
+        msg = {
+          "response_type" =>  "ephemeral",
+          "text" => "no poll found with #{poll_name}"
+        }
+
+        render json: msg
         return
       end
       p.last
@@ -169,6 +200,9 @@ class SlackController < ApplicationController
 
     def get_winner
       poll = get_poll
+      if poll.blank
+        return -1
+      end
 
       candidates = Candidate.where(poll_id: poll.id)
 
