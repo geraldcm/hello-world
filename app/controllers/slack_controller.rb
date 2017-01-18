@@ -12,9 +12,9 @@ class SlackController < ApplicationController
     end
 
     candidates = Candidate.where(poll_id: poll.id)
-    list = candidates.each do |c|
+    list = candidates.collect  do |c|
       {
-        "text": c.name
+        "text" =>  c.name
       }
     end
 
@@ -63,9 +63,9 @@ class SlackController < ApplicationController
     end
 
     votes = Vote.where(poll_id: poll.id, voter: user_id)
-    list = votes.each do |v|
+    list = votes.collect do |v|
       {
-        "text": "#{v.name} #{v.priority}"
+        "text" =>  "#{v.name} #{v.priority}"
       }
     end
 
@@ -81,9 +81,9 @@ class SlackController < ApplicationController
   def see_candidates
     poll = get_poll
     candidates = Candidate.where(poll_id: poll.id)
-    list = candidates.each do |c|
+    list = candidates.collect do |c|
       {
-        "text": c.name
+        "text" => c.name
       }
     end
 
