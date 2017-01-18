@@ -29,7 +29,7 @@ class SlackController < ApplicationController
 
   def close_poll
     poll = get_poll
-    if poll.blank
+    if poll.nil?
       return
     end
     poll.open = false
@@ -56,10 +56,18 @@ class SlackController < ApplicationController
 
   def vote
     poll_name, poll_candidates = poll_params
-    poll = get_poll
-    if poll.blank
-      return
+    poll = Poll.where(name: poll_name).order(:created_at)
+    if(poll.length == 0)
+      msg = {
+        "response_type" =>  "ephemeral",
+        "text" => "no poll found with #{poll_name}"
+      }
+
+      render json: msg
+      return nil
     end
+    poll = poll.last
+
 
     if(!poll.open)
       msg = {
@@ -111,7 +119,7 @@ class SlackController < ApplicationController
 
   def see_candidates
     poll = get_poll
-    if poll.blank
+    if poll.nil?
       return
     end
 
@@ -133,7 +141,7 @@ class SlackController < ApplicationController
 
   def see_standings
     poll = get_poll
-    if poll.blank
+    if poll.nil?
       return
     end
 
@@ -185,7 +193,7 @@ class SlackController < ApplicationController
     end
 
     def get_poll
-      p = Poll.where(name: poll_name)
+      p = Poll.where(name: poll_name).order(:created_at)
       if(p.length == 0)
         msg = {
           "response_type" =>  "ephemeral",
@@ -193,14 +201,14 @@ class SlackController < ApplicationController
         }
 
         render json: msg
-        return
+        return nil
       end
       p.last
     end
 
     def get_winner
       poll = get_poll
-      if poll.blank
+      if poll.nil?
         return -1
       end
 
