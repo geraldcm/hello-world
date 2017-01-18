@@ -229,7 +229,9 @@ class SlackController < ApplicationController
               ) as best_vote
             where
               best_vote.voter = votes.voter and
-              best_vote.priority = votes.priority
+              best_vote.priority = votes.priority and
+              votes.poll_id = #{poll.id} and
+              votes.candidate_id in (#{candidate_list.join(",")})
             group by candidate_id
             order by count(*) DESC;"
 
