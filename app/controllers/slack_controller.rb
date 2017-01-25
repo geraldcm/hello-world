@@ -1,3 +1,5 @@
+require '../../lib/logic/logic/logic.rb'
+
 class SlackController < ApplicationController
 
   skip_before_action :verify_authenticity_token
