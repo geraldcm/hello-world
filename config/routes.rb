@@ -13,6 +13,8 @@ Rails.application.routes.draw do
 
   post 'slack/messages'
 
+  get 'slack/messages'
+
   resources :votes
   resources :candidates
   resources :polls
@@ -23,6 +25,8 @@ Rails.application.routes.draw do
   get 'create_poll/see_candidates'
 
   get 'create_poll/see_standings'
+
+
 
   root 'welcome#index'
 end

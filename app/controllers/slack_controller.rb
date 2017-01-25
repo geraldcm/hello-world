@@ -3,26 +3,33 @@ class SlackController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def messages
-    params = parse_params
-    case params[:command]
-      when "create_poll"
-        msg = Logic.create_poll(params)
-      when "vote"
-        msg = Logic.vote(params)
-      when "start_vote"
-        msg = Logic.start_vote(params)
-      when "see_candidates"
-        msg = Logic.see_candidates(params)
-      when "close_poll"
-        msg = Logic.close_poll(params)
-      when "see_winner"
-        msg = Logic.close_poll(params)
-      else
-        # TODO output help message
-        msg = {
-          "response_type" =>  "ephemeral",
-          "text" => "Invalid Command #{msg}"
-        }
+    begin
+      mod_params = parse_params
+      case mod_params[:command]
+        when "create_poll"
+          msg = Logic.create_poll(params)
+        when "vote"
+          msg = Logic.vote(params)
+        when "start_vote"
+          msg = Logic.start_vote(params)
+        when "see_candidates"
+          msg = Logic.see_candidates(params)
+        when "close_poll"
+          msg = Logic.close_poll(params)
+        when "see_winner"
+          msg = Logic.close_poll(params)
+        else
+          # TODO output help message
+          msg = {
+            "response_type" =>  "ephemeral",
+            "text" => "Invalid Command #{msg}"
+          }
+      end
+    rescue => e
+      msg = {
+        "response_type" =>  "ephemeral",
+        "text" => "Request Failed #{params} #{e.message} "
+      }
     end
     render json: msg, status: :success
   end
