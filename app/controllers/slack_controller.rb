@@ -6,7 +6,7 @@ class SlackController < ApplicationController
 
   def messages
     mod_params = {}
-
+    puts params
     begin
       mod_params = parse_params
       case mod_params[:command]
@@ -30,6 +30,7 @@ class SlackController < ApplicationController
           }
       end
     rescue => e
+      puts e
       msg = {
         "response_type" =>  "ephemeral",
         "text" => "Request Failed mod=#{mod_params} #{params} #{e.message} #{e.backtrace} "
