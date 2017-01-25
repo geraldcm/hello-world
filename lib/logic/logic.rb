@@ -2,7 +2,7 @@ class Logic
   def self.start_vote(params)
     poll = Poll.where(name: poll_name).order(:created_at)
     if(p.length == 0)
-      return = {
+      return {
         "response_type" =>  "ephemeral",
         "text" => "no poll found with #{poll_name}"
       }
