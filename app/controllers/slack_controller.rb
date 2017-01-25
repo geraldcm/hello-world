@@ -5,21 +5,23 @@ class SlackController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def messages
+    mod_params = {}
+
     begin
       mod_params = parse_params
       case mod_params[:command]
         when "create_poll"
-          msg = Logic.create_poll(params)
+          msg = Logic.create_poll(mod_params)
         when "vote"
-          msg = Logic.vote(params)
+          msg = Logic.vote(mod_params)
         when "start_vote"
-          msg = Logic.start_vote(params)
+          msg = Logic.start_vote(mod_params)
         when "see_candidates"
-          msg = Logic.see_candidates(params)
+          msg = Logic.see_candidates(mod_params)
         when "close_poll"
-          msg = Logic.close_poll(params)
+          msg = Logic.close_poll(mod_params)
         when "see_winner"
-          msg = Logic.close_poll(params)
+          msg = Logic.close_poll(mod_params)
         else
           # TODO output help message
           msg = {
@@ -30,7 +32,7 @@ class SlackController < ApplicationController
     rescue => e
       msg = {
         "response_type" =>  "ephemeral",
-        "text" => "Request Failed #{params} #{e.message} "
+        "text" => "Request Failed mod=#{mod_params} #{params} #{e.message} #{e.backtrace} "
       }
     end
     render json: msg, status: :success
