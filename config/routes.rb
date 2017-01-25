@@ -11,6 +11,8 @@ Rails.application.routes.draw do
 
   post 'slack/see_winner'
 
+  post 'slack/messages'
+
   resources :votes
   resources :candidates
   resources :polls

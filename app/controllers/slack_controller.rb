@@ -2,6 +2,31 @@ class SlackController < ApplicationController
 
   skip_before_action :verify_authenticity_token
 
+  def messages
+    params = parse_params
+    case params[:command]
+      when "create_poll"
+        msg = Logic.create_poll(params)
+      when "vote"
+        msg = Logic.vote(params)
+      when "start_vote"
+        msg = Logic.start_vote(params)
+      when "see_candidates"
+        msg = Logic.see_candidates(params)
+      when "close_poll"
+        msg = Logic.close_poll(params)
+      when "see_winner"
+        msg = Logic.close_poll(params)
+      else
+        # TODO output help message
+        msg = {
+          "response_type" =>  "ephemeral",
+          "text" => "Invalid Command #{msg}"
+        }
+    end
+    render json: msg, status: :success
+  end
+
   def create_poll
     poll_name, poll_candidates = poll_params
     poll = Poll.new(name: poll_name.downcase, open: true)
@@ -177,6 +202,21 @@ class SlackController < ApplicationController
   end
 
   private
+    def parse_params
+      parsed_params = {}
+      text = params[:text]
+      candidates_text = text[/\[.*?\]/]
+      if(candidates_text.present?)
+        parsed_params[:candidates] = candidates_text.slice(1..-2).split(",")
+      end
+      text.gsub(/\[.*\]/, "")
+      split_params = text.strip.split(" ")
+      parsed_params[:command] = split_params[0].strip.downcase if split_params[0].present?
+      parsed_params[:poll_name] = split_params[1].strip.downcase if split_params[1].present?
+      parsed_params[:vote] = split_params[2].strip.downcase if split_params[2].present?
+      return parsed_params
+    end
+
     def poll_params
       poll_name = params[:text].strip.split(" ")[0].strip.downcase
       poll_candidates = params[:text][/\[.*?\]/].slice(1..-2).split(",")
