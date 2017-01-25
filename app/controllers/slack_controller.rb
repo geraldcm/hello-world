@@ -1,4 +1,4 @@
-require '../../lib/logic/logic/logic.rb'
+require '../../lib/logic/logic.rb'
 
 class SlackController < ApplicationController
 
