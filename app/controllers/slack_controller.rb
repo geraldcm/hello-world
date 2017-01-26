@@ -4,6 +4,14 @@ class SlackController < ApplicationController
 
   skip_before_action :verify_authenticity_token
 
+  def interactive
+    msg = {
+      "response_type" =>  "ephemeral",
+      "text" => "Interactive Reply #{params}"
+    }
+    render json: msg, status: :success
+  end
+
   def messages
     mod_params = {}
     Rails.logger.warn(params)

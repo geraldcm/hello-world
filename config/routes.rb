@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   post 'slack/see_winner'
 
   post 'slack/messages'
+  post 'slack/interactive'
 
   get 'slack/messages'
 
